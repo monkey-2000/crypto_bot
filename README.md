@@ -8,3 +8,7 @@
 запустить скрипт preprocessing_cryptodatadownload.py
 
 За основу взята структура https://github.com/RedLicorice/crypto-forecast
+
+## Планирую добавить следующие фичи:
+анализ предобработанных данных при помощи 
+https://habr.com/ru/company/ods/blog/323730/
