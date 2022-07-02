@@ -4,6 +4,7 @@
 2.07.22 предобработка csv файлов с сайта [cryptodatadownload](https://www.cryptodatadownload.com/data/).  Убирает первую строку, выкидывает строки с нулямию.
 Как использовать:
 загрузить csv файлы с сайта https://www.cryptodatadownload.com/data/ в папку /crypto_bot/data/row
+(например отсюда : https://www.cryptodatadownload.com/data/gemini/)
 /crypto_data_download
 запустить скрипт preprocessing_cryptodatadownload.py
 
