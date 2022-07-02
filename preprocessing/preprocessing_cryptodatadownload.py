@@ -6,7 +6,7 @@ import os
 
 logger = logging.getLogger('bot_logger')
 
-DIRNAME = 'E:/crypto/project/'
+DIRNAME = '/home/art/PycharmProjects/crypto_bot/'
 FORMAT = '%(asctime)s %(filename)s'
 
 
@@ -40,42 +40,41 @@ def get_symbols(file_names, path):
     return symbols
 
 
-# if __name__ = '__main__':
-crypto_douwnload_files_dir = 'data/row/crypto_data_download/'
-file_names = os.listdir(DIRNAME + crypto_douwnload_files_dir)
-symbols = get_symbols(file_names, crypto_douwnload_files_dir)
+if __name__ == '__main__':
+    path_to_index = DIRNAME + 'data/preprocessing/index.json'
+    crypto_douwnload_files_dir = 'data/row/crypto_data_download/'
+    file_names = os.listdir(DIRNAME + crypto_douwnload_files_dir)
+    symbols = get_symbols(file_names, crypto_douwnload_files_dir)
 
-logger.setLevel(logging.INFO)
-logger.addHandler(RotatingFileHandler("bot.log", maxBytes=10000, backupCount=2))
-#logger.addHandler(StreamHandler())
-logging.basicConfig(format='%(filename)s %(funcName)s %(lineno)d %(levelname)s')
+    logger.setLevel(logging.INFO)
+    logger.addHandler(RotatingFileHandler("bot.log", maxBytes=10000, backupCount=2))
+    #logger.addHandler(StreamHandler())
+    logging.basicConfig(format='%(filename)s %(funcName)s %(lineno)d %(levelname)s')
 
-if not os.path.exists(DIRNAME + 'data/preprocessing/CryptoDataDownload/'):
-    os.mkdir(DIRNAME + 'data/preprocessing/CryptoDataDownload/')
+    index = {}
 
-index = {}
-for sourse, csv_names in symbols.items():
-    print(sourse)
-    index[sourse] = dict()
-    for sym, csv_name in csv_names.items():
-        print(sym)
-        logger.info(csv_name + ' processing')
-        csv = DIRNAME + csv_name
-        # df = pd.read_csv(csv, sep=',', encoding='utf-8', index_col='date',parse_dates=True)
-        df = pd.read_csv(csv, sep=',', encoding='utf-8', parse_dates=True, index_col='date', skiprows=1)
+    for sourse, csv_names in symbols.items():
+        print(sourse)
 
-        ## Drop rows containing NaN
-        drop_rows_num = sum(df.isna().sum(axis=1))
-        df = df.dropna(axis=0)
-        logger.info('Drop ' + str(drop_rows_num) + ' rows.')
+        index[sourse] = dict()
+        for sym, csv_name in csv_names.items():
 
-        way_to_new_csv = DIRNAME + 'data/preprocessing/CryptoDataDownload/{}/'.format(sourse)
-        if not os.path.exists(way_to_new_csv):
-            os.mkdir(way_to_new_csv)
-        csv_path = way_to_new_csv + '{}.csv'.format(sym.lower())
-        df.to_csv(csv_path, sep=',', encoding='utf-8', index=True, index_label='date')
-        index[sym] = {'csv': csv_path}
-        logger.info('Saved {} in data/preprocessing/CryptoDataDownload/'.format(sym))
+            logger.info(csv_name + ' processing')
+            csv = DIRNAME + csv_name
+            df = pd.read_csv(csv, sep=',', encoding='utf-8', parse_dates=True, index_col='date', skiprows=1)
 
-with open(DIRNAME + 'data/preprocessing/index.json', 'w') as f:
-    json.dump(index, f, sort_keys=True, indent=4)
+            ## Drop rows containing NaN
+            drop_rows_num = sum(df.isna().sum(axis=1))
+            df = df.dropna(axis=0)
+            logger.info('Drop ' + str(drop_rows_num) + ' rows.')
+
+            way_to_new_csv = DIRNAME + 'data/preprocessing/CryptoDataDownload/{}/'.format(sourse)
+            if not os.path.exists(way_to_new_csv):
+                os.makedirs(way_to_new_csv)
+            csv_path = way_to_new_csv + '{}.csv'.format(sym.lower())
+            df.to_csv(csv_path, sep=',', encoding='utf-8', index=True, index_label='date')
+            index[sourse][sym] = {'csv': csv_path}
+            logger.info('Saved {} in data/preprocessing/CryptoDataDownload/'.format(sym))
+
+    with open(path_to_index, 'w') as f:
+            json.dump(index, f, indent = 4, sort_keys=False)
